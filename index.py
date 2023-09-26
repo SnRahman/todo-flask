@@ -79,6 +79,7 @@ def login():
             # add name user user in session
 
             session['username'] = result[1]
+            session['user_id'] = result[0]
 
             flash('Login Successfully!', 'success')
             return redirect(url_for('todo'))
@@ -91,7 +92,9 @@ def login():
 def todo():
     if 'username' in session:
         db = connection.cursor()
-        db.execute('SELECT * FROM todos')
+
+        user_id = session.get('user_id',0)
+        db.execute(f'SELECT * FROM todos WHERE user_id={user_id}')
         todos = db.fetchall()
         db.close()
 
@@ -108,8 +111,11 @@ def create_todo():
         description = request.form['description']
 
         if description:
+            
+            user_id = session.get('user_id',0)
+
             db = connection.cursor()
-            db.execute('INSERT INTO todos (description) VALUES (%s) ',(description,))
+            db.execute('INSERT INTO todos (description,user_id) VALUES (%s,%s) ',(description,user_id))
             connection.commit()
             db.close()
             flash('Todo is added', 'success')
@@ -133,6 +139,7 @@ def delete_todo(id):
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('user_id', None)
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
