@@ -46,10 +46,10 @@
     <div class="container">
         <div class="signup mt-5 p-4">
             
-            {% with flash_messages = get_flashed_messages() %}
+            {% with flash_messages = get_flashed_messages( with_categories=true ) %}
                 {% if flash_messages %}
-                    {% for flash_message in flash_messages %}
-                        <div class="alert alert-danger" role="alert">
+                    {% for category, flash_message in flash_messages %}
+                        <div class="alert alert-{{ category}}" role="alert">
                             {{ flash_message }}
                         </div>
                     {% endfor %}

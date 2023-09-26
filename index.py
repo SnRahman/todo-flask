@@ -76,7 +76,10 @@ def login():
         db.close()
 
         if result:
+            # add name user user in session
+
             session['username'] = result[1]
+
             flash('Login Successfully!', 'success')
             return redirect(url_for('todo'))
         else:
@@ -91,9 +94,12 @@ def todo():
         db.execute('SELECT * FROM todos')
         todos = db.fetchall()
         db.close()
+
         username = session.get('username', 'Guest')
+        
         return render_template('todo.html', current_todos = todos, username = username)
     else:
+        flash('Login before access', 'error')
         return redirect(url_for('login'))
 
 @app.route('/create-todo', methods =['POST'])
