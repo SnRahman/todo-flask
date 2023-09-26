@@ -1,4 +1,4 @@
-from flask import Flask ,render_template , request , redirect, url_for , flash
+from flask import Flask ,render_template , request , redirect, url_for , flash, session
 from mysql import connector
 
 
@@ -45,8 +45,9 @@ def register():
         
         connection.commit()
         db.close()
+        
         flash('Signup Successfully!', 'success')
-        return redirect(url_for('signup'))
+        return redirect(url_for('login'))
     else:
         flash('Only Post type is allowed for signup', 'error')
         return redirect(url_for('signup'))
@@ -75,8 +76,9 @@ def login():
         db.close()
 
         if result:
+            session['username'] = result[1]
             flash('Login Successfully!', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('todo'))
         else:
             flash('Credentials does\'t matched!', 'error')
             return redirect(url_for('login'))
@@ -84,13 +86,15 @@ def login():
 
 @app.route('/todo')
 def todo():
-    db = connection.cursor()
-    db.execute('SELECT * FROM todos')
-    todos = db.fetchall()
-    db.close()
-
-    return render_template('todo.html', current_todos = todos)
-
+    if 'username' in session:
+        db = connection.cursor()
+        db.execute('SELECT * FROM todos')
+        todos = db.fetchall()
+        db.close()
+        username = session.get('username', 'Guest')
+        return render_template('todo.html', current_todos = todos, username = username)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/create-todo', methods =['POST'])
 def create_todo():
@@ -118,6 +122,12 @@ def delete_todo(id):
     db.close()
     flash('Todo is deleted', 'success')
     return redirect(url_for('todo'))
+   
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.debug = True

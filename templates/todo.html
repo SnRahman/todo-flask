@@ -6,13 +6,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <title>TODO</title>
     <style>
-        body {
-            background-color: #3768D2;
+        .container {
             display: flex;
             justify-content: center;
         }
-        
-        .container {
+        body {
+            background-color: #6086DC;
+        } 
+        .todo-container {
             padding: 20px;
             background-color: #fff;
             display: flex;
@@ -39,12 +40,12 @@
             border-radius: 5px;
         }
 
-        ul {
+        .todo-list {
             list-style: none;
             padding: 20px 40px;
         }
 
-        li {
+        .todo-item {
             background-color: #C6E1E5;
             padding: 0px 20px;
             height: 50px;
@@ -56,7 +57,7 @@
             margin:10px 0px;
         }
 
-        li button {
+        .todo-item-btn {
             background-color: #1B2898;
             color: #fff;
             padding: 10px;
@@ -69,35 +70,67 @@
             text-decoration: line-through;
             background-color: yellow;
         }
+
+        .navbar-collapse{
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="alert alert-danger d-none" id="alert" role="alert">
-            Kindly Enter a Todo.
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/todo">TODO</a>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav ">
+                    {% if username =='Guest' %}
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/signup">Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav nav-bar-right">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">{{ username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-            {% with flash_messages = get_flashed_messages() %}
-                {% if flash_messages %}
-                    {% for flash_message in flash_messages %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ flash_message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        <form action="/create-todo" method="POST">
-            <input id="input"  type="text" name="description" placeholder="Enter Todo">
-            <button type="submit">Add</button>
-        </form>
-
-        <ul id="ul">
-            {% for current_todo in current_todos %}
-                <li> 
-                    <p>{{ current_todo[1] }}</p> 
-                    <a href="/delete-todo/{{ current_todo[0] }}"> X </button>
-                </li>
-            {% endfor %}
-        </ul>
+    </nav>
+    <div class="container">
+        <div class="todo-container mt-5">
+            <div class="alert alert-danger d-none" id="alert" role="alert">
+                Kindly Enter a Todo.
+            </div>
+                {% with flash_messages = get_flashed_messages() %}
+                    {% if flash_messages %}
+                        {% for flash_message in flash_messages %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ flash_message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            <form action="/create-todo" method="POST">
+                <input id="input"  type="text" name="description" placeholder="Enter Todo">
+                <button type="submit">Add</button>
+            </form>
+    
+            <ul id="ul" class="todo-list">
+                {% for current_todo in current_todos %}
+                    <li class="todo-item">
+                        <p>{{ current_todo[1] }}</p> 
+                        <a class="todo-item-btn" href="/delete-todo/{{ current_todo[0] }}"> X </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     <script src="./script.js" ></script>
 </body>
